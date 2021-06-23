@@ -71,4 +71,5 @@ jrebel.lic
 
 build
 .gradle
-*.pid
+*.pid'.idea' 
+'*.iml' 
