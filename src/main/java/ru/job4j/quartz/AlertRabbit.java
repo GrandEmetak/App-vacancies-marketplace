@@ -3,10 +3,7 @@ package ru.job4j.quartz;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -20,7 +17,23 @@ import static org.quartz.SimpleScheduleBuilder.*;
  * Топик : 2.3.5. Проект. Агрегатор Java
  */
 public class AlertRabbit {
+    private Properties properties = new Properties();
     private String path;
+
+
+    public AlertRabbit (String path) {
+        this.path = path;
+        load();
+    }
+
+    private void load() {
+        try (FileInputStream fileInputStream = new FileInputStream(path)) {
+           this.properties.load(fileInputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+   /* private String path;
     private final Map<String, Integer> values = new HashMap<>();
 
     public AlertRabbit(String path) {
@@ -53,15 +66,7 @@ public class AlertRabbit {
 
     public Integer getInteger(String key) {
         return values.get(key);
-    }
-
-    /*private Properties properties;
-
-    public AlertRabbit (Properties properties) {
-        this.properties = properties;
-    }
-
-    public List<>*/
+    }*/
 
     public static void main(String[] args) {
         try {
@@ -75,8 +80,11 @@ public class AlertRabbit {
             //JobDetail - используется для определения экземпляров Job s
             //Объект JobDetail создается клиентом Quartz во время добавления задания в планировщик.
             // По сути, это определение экземпляра задания
-            AlertRabbit alertRabbit = new AlertRabbit("rabbit.properties");
-            int i = alertRabbit.getInteger("rabbit.interval");
+            AlertRabbit alertRabbit = new AlertRabbit("./rabbit.properties");
+           /* int i = alertRabbit.getInteger("rabbit.interval");
+           это для варианта решения класса AlterRabbit что выше заккоментен*/
+            String res = alertRabbit.properties.getProperty("rabbit.interval");
+             int i = Integer.parseInt(res);
             JobDetail job = newJob(Rabbit.class).build();
             SimpleScheduleBuilder times = simpleSchedule()
                     .withIntervalInSeconds(i)
