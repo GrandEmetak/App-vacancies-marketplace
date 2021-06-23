@@ -2,6 +2,15 @@ package ru.job4j.quartz;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import static org.quartz.JobBuilder.*;
 import static org.quartz.TriggerBuilder.*;
 import static org.quartz.SimpleScheduleBuilder.*;
@@ -11,14 +20,69 @@ import static org.quartz.SimpleScheduleBuilder.*;
  * Топик : 2.3.5. Проект. Агрегатор Java
  */
 public class AlertRabbit {
+    private String path;
+    private final Map<String, Integer> values = new HashMap<>();
+
+    public AlertRabbit(String path) {
+        this.path = path;
+        load();
+    }
+
+    public void load() {
+        final int[] i = new int[1];
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(this.path))) {
+            bufferedReader.lines().forEach(str -> {
+                String[] strings = str.split("=");
+                if (strings.length <= 1) {
+                    throw new IllegalArgumentException();
+                } else {
+                    try {
+                        i[0] = Integer.parseInt(strings[1].trim());
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                    values.put(strings[0], i[0]);
+                }
+            });
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Integer getInteger(String key) {
+        return values.get(key);
+    }
+
+    /*private Properties properties;
+
+    public AlertRabbit (Properties properties) {
+        this.properties = properties;
+    }
+
+    public List<>*/
+
     public static void main(String[] args) {
         try {
+            //Планировщик(Scheduler) - основной API для взаимодействия с планировщиком фреймворка.
+            //Прежде чем мы сможем использовать Планировщик , необходимо создать его экземпляр.
+            // Для этого мы можем использовать фабрику SchedulerFactory :
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            //Однако планировщик не будет действовать на любые триггеры ,
+            // пока не было начато с запуска () метод :
             scheduler.start();
+            //JobDetail - используется для определения экземпляров Job s
+            //Объект JobDetail создается клиентом Quartz во время добавления задания в планировщик.
+            // По сути, это определение экземпляра задания
+            AlertRabbit alertRabbit = new AlertRabbit("rabbit.properties");
+            int i = alertRabbit.getInteger("rabbit.interval");
             JobDetail job = newJob(Rabbit.class).build();
             SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(10)
+                    .withIntervalInSeconds(i)
                     .repeatForever();
+            //Триггер - компонент, определяющий расписание, по которому будет выполняться данное задание.
+            //Объекты- триггеры используются для запуска выполнения заданий .
             Trigger trigger = newTrigger()
                     .startNow()
                     .withSchedule(times)
@@ -29,6 +93,9 @@ public class AlertRabbit {
         }
     }
 
+    //Job - интерфейс, который будет реализован компонентами, которые мы хотим выполнить.
+    //Когда срабатывает триггер задания ,
+// метод execute () вызывается одним из рабочих потоков планировщика.
     public static class Rabbit implements Job {
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
