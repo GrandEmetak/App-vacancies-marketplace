@@ -21,14 +21,14 @@ public class AlertRabbit {
     private String path;
 
 
-    public AlertRabbit (String path) {
+    public AlertRabbit(String path) {
         this.path = path;
         load();
     }
 
     private void load() {
         try (FileInputStream fileInputStream = new FileInputStream(path)) {
-           this.properties.load(fileInputStream);
+            this.properties.load(fileInputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -84,7 +84,7 @@ public class AlertRabbit {
            /* int i = alertRabbit.getInteger("rabbit.interval");
            это для варианта решения класса AlterRabbit что выше заккоментен*/
             String res = alertRabbit.properties.getProperty("rabbit.interval");
-             int i = Integer.parseInt(res);
+            int i = Integer.parseInt(res);
             JobDetail job = newJob(Rabbit.class).build();
             SimpleScheduleBuilder times = simpleSchedule()
                     .withIntervalInSeconds(i)
