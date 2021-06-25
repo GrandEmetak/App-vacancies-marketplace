@@ -1,13 +1,8 @@
 language: java
-
 jdk:
   - openjdk14
 
 sudo: false
-
-env:
-  global:
-   - CODECOV_TOKEN="a8c054f5-c1ff-47c4-b062-7840f49bc0e5"
 
 # после выполнения сборки запустить скрипт, который будет собирать статистику по JaCoCo
 # Здесь используется сторонни сервис https://codecov.io/
@@ -20,3 +15,6 @@ notifications:
       -JekHamond@tutanota.com
     on_success: never # default: change
     on_failure: always # default: always
+env:
+global:
+  - CODECOV_TOKEN="a8c054f5-c1ff-47c4-b062-7840f49bc0e5"
