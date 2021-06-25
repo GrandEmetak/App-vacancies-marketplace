@@ -55,10 +55,11 @@ public class AlertRabbitProp {
             System.out.println("JDBC Driver not found");
             e.printStackTrace();
         }
-        try (Connection connect = DriverManager.getConnection
-                (alertRabbitProp.properties.getProperty("hibernate.connection.url"),
-                        alertRabbitProp.properties.getProperty("hibernate.connection.username"),
-                        alertRabbitProp.properties.getProperty("hibernate.connection.password"))) {
+        try (Connection connect =
+                     DriverManager.getConnection(
+                             alertRabbitProp.properties.getProperty("hibernate.connection.url"),
+                             alertRabbitProp.properties.getProperty("hibernate.connection.username"),
+                             alertRabbitProp.properties.getProperty("hibernate.connection.password"))) {
             try {
                 List<Connection> store = new ArrayList<>();
                 Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
