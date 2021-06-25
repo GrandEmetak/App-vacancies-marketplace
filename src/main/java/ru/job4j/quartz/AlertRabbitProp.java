@@ -67,21 +67,21 @@ public class AlertRabbitProp {
                 scheduler.start();
                 String s = alertRabbitProp.properties.getProperty("rabbit.interval");
                 int i = Integer.parseInt(s);
-                System.out.println("интервал для трид : " + i);
+                System.out.println("интервал rabbit.interval : " + i);
                 JobDataMap data = new JobDataMap();
                 data.put("store", connect);
                 JobDetail job = newJob(Rabbit.class)
                         .usingJobData(data)
                         .build();
                 SimpleScheduleBuilder times = simpleSchedule()
-                        .withIntervalInSeconds(5)
+                        .withIntervalInSeconds(i)
                         .repeatForever();
                 Trigger trigger = newTrigger()
                         .startNow()
                         .withSchedule(times)
                         .build();
                 scheduler.scheduleJob(job, trigger);
-                Thread.sleep(i);
+                Thread.sleep(10000);
                 scheduler.shutdown();
                 System.out.println(store);
             } catch (Exception se) {
