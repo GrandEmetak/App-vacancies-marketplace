@@ -3,12 +3,10 @@ package ru.job4j.quartz;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
+import javax.xml.crypto.Data;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -102,8 +100,11 @@ public class AlertRabbitProp {
         public void execute(JobExecutionContext context) {
             System.out.println("Rabbit runs here ...");
             var store = (Connection) context.getJobDetail().getJobDataMap().get("store");
-            try (PreparedStatement preparedStatement = store.prepareStatement("insert into rabbit(created_date) values(?)")) {
-                preparedStatement.setInt(1, (int) System.currentTimeMillis());
+            try (PreparedStatement preparedStatement =
+                         store.prepareStatement("insert into rabbit(created_date) values(?)")) {
+                //запись в таблицу в формате timestamp without time zone
+                preparedStatement.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+                //в миллисекундах в таблицу запись- setInt(1, (int) System.currentTimeMillis());
                 preparedStatement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
