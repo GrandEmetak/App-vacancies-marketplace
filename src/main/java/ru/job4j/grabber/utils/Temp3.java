@@ -26,11 +26,15 @@ public class Temp3 {
 
     private static String correctMonth(String date) {
         for (String key : MONTHS.keySet()) {
-            if (date.contains(key)) return date.replace(key, MONTHS.get(key));
+            if (date.contains(key)) {
+                return date.replace(key, MONTHS.get(key));
+            }
+            System.err.println("ДАТУ не нужно корректировать");
+
         }
-        System.err.println("ДАТУ не нужно корректировать");
         return date;
     }
+
 
     public static void main(String[] args) {
         var inputDate = "23 апр 21, 17:16";
@@ -40,7 +44,7 @@ public class Temp3 {
         var dtf = DateTimeFormatter.ofPattern("dd MM yy, HH:mm");
 
         var localDateTime = LocalDateTime.parse(yourDate, dtf);
-        System.out.println("lmfl;sdmf---"  + localDateTime);
+        System.out.println("lmfl;sdmf---" + localDateTime);
 
         System.out.println("day = " + localDateTime.getDayOfMonth());
         System.out.println("month = " + localDateTime.getMonth());
