@@ -8,6 +8,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,6 +19,10 @@ import java.util.Map;
  * Вам нужно через методы String преобразовать строку в дату.
  * Выделим интерфейс package ru.job4j.gabber.utils.DateTimeParse
  * и реализуем его конкретно по сайту sql.ru
+ * +
+ * 2.1.1. Парсинг https://www.sql.ru/forum/job-offers/3 [#285210]
+ * Топик : 2.3.5. Проект.
+ * 1. Доработайте метод main из предыдущего задания. Парсить нужно первые 5 страниц.
  */
 public class SqlDateTimeParser implements DateTimeParser {
     private static final Map<String, String> MONTHS = Map.ofEntries(
@@ -71,8 +76,10 @@ public class SqlDateTimeParser implements DateTimeParser {
     }
 
     public static void main(String[] args) throws IOException {
+        Map<Integer, String> links = new HashMap<>();
         SqlDateTimeParser sqlDateTimeParser = new SqlDateTimeParser();
         Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
+        Elements row2 = doc.select(".sort_options");
         Elements row = doc.select(".postslisttopic");
         for (Element td : row) {
             Element href = td.child(0);
@@ -84,5 +91,40 @@ public class SqlDateTimeParser implements DateTimeParser {
             System.out.println(sqlDateTimeParser.parse(str));
             System.out.println();
         }
+        //Доработайте метод main из предыдущего задания. Парсить нужно первые 5 страниц.
+        Elements link = row2.select("a[href]");
+        for (Element element : link) {
+            System.out.println(element.attr("href"));
+            System.out.println(element.text());
+            links.put(Integer.parseInt(element.text()), element.attr("href"));
+        }
+        for (int i = 2; i < 6; i++) {
+            String strLink = links.get(i);
+            Document doc1 = Jsoup.connect(strLink).get();
+            Elements row3 = doc1.select(".postslisttopic");
+            for (Element td : row3) {
+                Element href = td.child(0);
+                System.out.println(href.attr("href"));
+                System.out.println(href.text());
+                var elementDate = td.parent().child(5); //чилдрен содержащий дату
+                String str = elementDate.text();
+                System.out.println(str);
+                System.out.println(sqlDateTimeParser.parse(str));
+                System.out.println();
+            }
+        }
+        /*SqlDateTimeParser sqlDateTimeParser = new SqlDateTimeParser();
+        Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
+        Elements row = doc.select(".postslisttopic");
+        for (Element td : row) {
+            Element href = td.child(0);
+            System.out.println(href.attr("href"));
+            System.out.println(href.text());
+            var elementDate = td.parent().child(5); //чилдрен содержащий дату
+            String str = elementDate.text();
+            System.out.println(str);
+            System.out.println(sqlDateTimeParser.parse(str));
+            System.out.println();
+        }*/
     }
 }
