@@ -6,6 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -80,6 +81,7 @@ public class SqlDateTimeParser implements DateTimeParser {
         SqlDateTimeParser sqlDateTimeParser = new SqlDateTimeParser();
         Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
         Elements row2 = doc.select(".sort_options");
+        System.out.println("Sort Option size- " + row2.size());
         Elements row = doc.select(".postslisttopic");
         for (Element td : row) {
             Element href = td.child(0);
@@ -91,10 +93,11 @@ public class SqlDateTimeParser implements DateTimeParser {
             System.out.println(sqlDateTimeParser.parse(str));
             System.out.println();
         }
+        System.out.println("____________________________________");
         //Доработайте метод main из предыдущего задания. Парсить нужно первые 5 страниц.
         Elements link = row2.select("a[href]");
         for (Element element : link) {
-            System.out.println(element.attr("href"));
+            System.out.println("Первая ссылка и первый Элемент Сорт" + element.attr("href"));
             System.out.println(element.text());
             links.put(Integer.parseInt(element.text()), element.attr("href"));
         }
