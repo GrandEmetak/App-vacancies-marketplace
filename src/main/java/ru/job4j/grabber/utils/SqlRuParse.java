@@ -49,7 +49,7 @@ public class SqlRuParse implements Parse {
         //пример Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
         Document doc = Jsoup.connect(linkArg).get(); // запарсили титульную страницу из Аргуметов метода
         Elements row2 = doc.select(".sort_options"); // записали все Элементы по селекту
-        Elements row = doc.select(".postslisttopic");//все топики на текущей станице
+        Elements row = doc.select(".postslisttopic"); //все топики на текущей станице
         for (Element td : row) { // вынимаем по одному
             Element href = td.child(0); //заголовок
             //ссылка на топик он все запишет с него в Пост -- добавить возврат Пост объекта
@@ -58,7 +58,7 @@ public class SqlRuParse implements Parse {
         // Парсить нужно первые 5 страниц.
         Elements link1 = row2.select("a[href]");
         for (Element element : link1) {
-            //System.out.println("Первая ссылка и первый Элемент Сорт" + element.attr("href"));
+            // System.out.println("Первая ссылка и первый Элемент Сорт" + element.attr("href"));
            // System.out.println(element.text());
             links.put(Integer.parseInt(element.text()), element.attr("href"));
         }
