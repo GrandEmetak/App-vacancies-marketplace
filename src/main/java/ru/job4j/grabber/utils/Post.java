@@ -2,6 +2,7 @@ package ru.job4j.grabber.utils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 2.3. Загрузка деталей поста. [#285212]
@@ -56,4 +57,16 @@ public class Post {
         this.created = created;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return id == post.id && Objects.equals(title, post.title) && Objects.equals(link, post.link) && Objects.equals(description, post.description) && Objects.equals(created, post.created);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, link, description, created);
+    }
 }
