@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Post(package ru.job4j.grabber.utils.Post) это модель. В ней не должно быть парсинга.
  * Вынесена логика парсинга в класс SqlRuParse. 2.3. Загрузка деталей поста. [#285212 #174917]
- *Топик : 2.3.5. Проект.  Создайте метод для загрузки деталей объявления.
+ * Топик : 2.3.5. Проект.  Создайте метод для загрузки деталей объявления.
  * +
  * 2.4. SqlRuParse [#285213] Топик : 2.3.5. Проект.
  * В этом задании нужно собрать все элементы парсинга в классе SqlRuParse.
@@ -22,13 +22,18 @@ import java.util.Map;
  * Метод detail должен загружать детали одного поста в Post.
  */
 public class SqlRuParse implements Parse {
-    //Экземпляр класса с методом для конвертации даты в формат LocalDateTime
-    private SqlDateTimeParser sqlDateTimeParser = new SqlDateTimeParser();
-    //Модель данных Post включает (id, title, link, description, created(LocalDateTime))
-    private List<Post> postList = new ArrayList<>();
 
-    //пустой кончтруктор можно и не создавать
-    public SqlRuParse() {
+    private DateTimeParser sqlDateTimeParser;
+
+
+    // в конструктор передается интерфейс
+    //Это не интерфейс "объект", передаваемый методу, все еще просто обычный объект.
+    // Это просто способ сказать "этот параметр принимает любой объект, который поддерживает этот интерфейс".
+    // Это эквивалентно принятию некоторого объекта типа базового класса, даже если вы передаете подкласс.
+    //это называется программированием на интерфейсы. Вы не кодируете определенный класс реализации списков узлов,
+    // а интерфейс, реализованный всеми этими реализациями.
+    public SqlRuParse(DateTimeParser dateTimeParser) {
+        this.sqlDateTimeParser = dateTimeParser;
     }
 
     /**
@@ -44,6 +49,8 @@ public class SqlRuParse implements Parse {
     @Override
     public List<Post> list(String link) throws IOException {
         String linkArg = link;
+        //Модель данных Post включает (id, title, link, description, created(LocalDateTime))
+        List<Post> postList = new ArrayList<>();
         Map<Integer, String> links = new HashMap<>();
         SqlDateTimeParser sqlDateTimeParser = new SqlDateTimeParser();
         //пример Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
@@ -54,22 +61,6 @@ public class SqlRuParse implements Parse {
             Element href = td.child(0); //заголовок
             //ссылка на топик он все запишет с него в Пост -- добавить возврат Пост объекта
             postList.add(detail(href.attr("href")));
-        }
-        // Парсить нужно первые 5 страниц.
-        Elements link1 = row2.select("a[href]");
-        for (Element element : link1) {
-            // System.out.println("Первая ссылка и первый Элемент Сорт" + element.attr("href"));
-           // System.out.println(element.text());
-            links.put(Integer.parseInt(element.text()), element.attr("href"));
-        }
-        for (int i = 2; i < 6; i++) {
-            String strLink = links.get(i); // получаем след страницу ссылку - стр 2
-            Document doc1 = Jsoup.connect(strLink).get(); // загружаем ее
-            Elements row3 = doc1.select(".postslisttopic"); // все топики с нее получаем
-            for (Element td : row3) {
-                Element href = td.child(0);
-                postList.add(detail(href.attr("href")));
-            }
         }
         return postList;
     }
@@ -100,30 +91,18 @@ public class SqlRuParse implements Parse {
 // дата
         Elements dat = elements.select("td[class=msgFooter]");
         boolean msdt = dat.isEmpty();
-        String[] daTeAr = dat.text().split(" ");
+        String[] daTeAr = dat.text().split("\\[");
         // нижние if с вложенным if из-за приходящих со страницы с топиком данны
         // пример - сегодня, 18:22 [223447713] Ответить
-        if (daTeAr[0].contains("вчера,") || daTeAr[0].contains("сегодня,")) {
-            if (daTeAr[0].contains("сегодня,")) {
-                String build0 = daTeAr[0] + " " + daTeAr[1];
-                System.out.println("Т что по будет конвертировано по дате :" + build0);
-                var time = sqlDateTimeParser.parse(build0);
-                post.setCreated(time);
-            } else {
-                String build1 = daTeAr[0] + " " + daTeAr[1];
-                System.out.println("Т что по будет конвертировано по дате :" + build1);
-
-                var time = sqlDateTimeParser.parse(build1);
-                post.setCreated(time);
-            }
+        String buildStr0;
+        String[] dateAr1 = daTeAr[0].split(" ");
+        if (dateAr1[0].contains("сегодня,") || dateAr1[0].contains("вчера,")) {
+            buildStr0 = dateAr1[0] + " " + dateAr1[1];
         } else {
-
-            String bild = daTeAr[0] + " " + daTeAr[1] + " " + daTeAr[2] + " " + daTeAr[3];
-            System.out.println("Т что по будет конвертировано по дате : " + bild);
-            var time = sqlDateTimeParser.parse(bild);
-            post.setCreated(time);
-
+            buildStr0 = dateAr1[0] + " " + dateAr1[1] + " " + dateAr1[2] + " " + dateAr1[3];
         }
+        var time = sqlDateTimeParser.parse(buildStr0);
+        post.setCreated(time);
         return post;
     }
 
@@ -144,12 +123,13 @@ public class SqlRuParse implements Parse {
         System.out.println(sqlRuParse.post.getDescription());
         System.out.println();
         System.out.println(sqlRuParse.post.getCreated());*/
-
-        SqlRuParse sqlRuParse = new SqlRuParse();
+        SqlDateTimeParser sqlDateTimeParser = new SqlDateTimeParser();
+        SqlRuParse sqlRuParse = new SqlRuParse(sqlDateTimeParser);
+        List<Post> postList = new ArrayList<>();
         String link = "https://www.sql.ru/forum/job-offers";
-        sqlRuParse.list(link);
-        System.out.println(sqlRuParse.postList.size());
-        Post wathsUp = sqlRuParse.postList.get(3);
+        postList = sqlRuParse.list(link);
+        System.out.println(postList.size());
+        Post wathsUp = postList.get(3);
         System.out.println(wathsUp.getTitle());
         System.out.println(wathsUp.getDescription());
         System.out.println(wathsUp.getCreated());
