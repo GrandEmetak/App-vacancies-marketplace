@@ -112,7 +112,6 @@ public class SqlRuParse implements Parse {
 // String link = "https://www.sql.ru/forum/1336128/arhitektor-resheniy-moskva-300-000-350-000-rub";
       /*  String link = "https://www.sql.ru/forum/1337113/frontend-razrabotchik-remote-do-330-000";
         SqlRuParse sqlRuParse = new SqlRuParse(link);
-
         System.out.println();
         System.out.println(sqlRuParse.post.getId());
         System.out.println();
@@ -123,6 +122,7 @@ public class SqlRuParse implements Parse {
         System.out.println(sqlRuParse.post.getDescription());
         System.out.println();
         System.out.println(sqlRuParse.post.getCreated());*/
+
         SqlDateTimeParser sqlDateTimeParser = new SqlDateTimeParser();
         SqlRuParse sqlRuParse = new SqlRuParse(sqlDateTimeParser);
         List<Post> postList = new ArrayList<>();
