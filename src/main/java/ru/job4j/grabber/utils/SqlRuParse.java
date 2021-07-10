@@ -25,7 +25,6 @@ public class SqlRuParse implements Parse {
 
     private DateTimeParser sqlDateTimeParser;
 
-
     // в конструктор передается интерфейс
     //Это не интерфейс "объект", передаваемый методу, все еще просто обычный объект.
     // Это просто способ сказать "этот параметр принимает любой объект, который поддерживает этот интерфейс".
@@ -51,11 +50,8 @@ public class SqlRuParse implements Parse {
         String linkArg = link;
         //Модель данных Post включает (id, title, link, description, created(LocalDateTime))
         List<Post> postList = new ArrayList<>();
-        Map<Integer, String> links = new HashMap<>();
-        SqlDateTimeParser sqlDateTimeParser = new SqlDateTimeParser();
         //пример Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
         Document doc = Jsoup.connect(linkArg).get(); // запарсили титульную страницу из Аргуметов метода
-        Elements row2 = doc.select(".sort_options"); // записали все Элементы по селекту
         Elements row = doc.select(".postslisttopic"); //все топики на текущей станице
         for (Element td : row) { // вынимаем по одному
             Element href = td.child(0); //заголовок
@@ -89,19 +85,8 @@ public class SqlRuParse implements Parse {
         String desc = elements1.get(1).text();
         post.setDescription(desc);
 // дата
-        Elements dat = elements.select("td[class=msgFooter]");
-        boolean msdt = dat.isEmpty();
-        String[] daTeAr = dat.text().split("\\[");
-        // нижние if с вложенным if из-за приходящих со страницы с топиком данны
-        // пример - сегодня, 18:22 [223447713] Ответить
-        String buildStr0;
-        String[] dateAr1 = daTeAr[0].split(" ");
-        if (dateAr1[0].contains("сегодня,") || dateAr1[0].contains("вчера,")) {
-            buildStr0 = dateAr1[0] + " " + dateAr1[1];
-        } else {
-            buildStr0 = dateAr1[0] + " " + dateAr1[1] + " " + dateAr1[2] + " " + dateAr1[3];
-        }
-        var time = sqlDateTimeParser.parse(buildStr0);
+        String date = elements.select("td[class=msgFooter]").text();
+        var time = sqlDateTimeParser.parse(date.substring(0, date.indexOf(" [")));
         post.setCreated(time);
         return post;
     }
