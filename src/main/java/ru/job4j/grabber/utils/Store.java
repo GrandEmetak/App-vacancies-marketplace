@@ -1,5 +1,6 @@
 package ru.job4j.grabber.utils;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -13,18 +14,18 @@ public interface Store {
      * Метод save() - сохраняет объявление в базе.
      * @param post
      */
-    void save(Post post);
+    void save(Post post) throws Exception;
 
     /**
      * Метод getAll() - позволяет извлечь объявления из базы.
      * @return
      */
-    List<Post> getAll();
+    List<Post> getAll() throws Exception;
 
     /**
      *Метод findById(int id) - позволяет извлечь объявление из базы по id.
      * @param id
      * @return
      */
-    Post findById(int id);
+    Post findById(int id) throws Exception;
 }
