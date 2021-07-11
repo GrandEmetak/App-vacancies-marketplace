@@ -45,7 +45,7 @@ public class PsqlStore implements Store, AutoCloseable {
      * @throws Exception
      */
     @Override
-    public void save(Post post) throws Exception {
+    public void save(Post post) {
         try (PreparedStatement preparedStatement =
                      cnn.prepareStatement("insert into post(name, text, link, created) values(?, ?, ?, ?)",
                              Statement.RETURN_GENERATED_KEYS)) {
@@ -69,13 +69,27 @@ public class PsqlStore implements Store, AutoCloseable {
     /**
      * Метод getAll() - позволяет извлечь все объявления(topics) из базы данных
      *
-     * @return List<Post> всех объектов находящися на момет вызова в БД
-     * @throws Exception
+     * @returnList<Post> всех объектов находящися на момет вызова в БД
      */
     @Override
-    public List<Post> getAll() throws Exception {
+    public List<Post> getAll() {
         List<Post> postList = new ArrayList<>();
-        int count = 0;
+        try (PreparedStatement preparedStatement = cnn.prepareStatement("select * from post")) {
+            preparedStatement.execute();
+            var resultSet = preparedStatement.getResultSet();
+            while (resultSet.next()) {
+                Post post = new Post();
+                post.setId(resultSet.getInt("id"));
+                post.setTitle(resultSet.getString("name"));
+                post.setDescription(resultSet.getString("text"));
+                post.setLink(resultSet.getString("link"));
+                post.setCreated(timeConvertToLocal(resultSet.getTimestamp("created")));
+                postList.add(post);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+       /* int count = 0;
         String sql = "select count(id) from post";
         try (Statement statement = cnn.createStatement()) {
             statement.execute(sql);
@@ -89,7 +103,7 @@ public class PsqlStore implements Store, AutoCloseable {
         }
         for (int i = 1; i <= count; i++) {
             postList.add(findById(i)); //write object Post in to List
-        }
+        }*/
         return postList;
     }
 
@@ -104,14 +118,15 @@ public class PsqlStore implements Store, AutoCloseable {
         if (id == 0) {
             throw new IllegalArgumentException("Id don't be a 0(null)");
         }
-        Post post = new Post(); // модель данных
+        Post post = null; // модель данных
         try (PreparedStatement preparedStatement =
                      cnn.prepareStatement("select * from post where id = ?")) {
             preparedStatement.setInt(1, id);
             var ryt = preparedStatement.execute();
             ResultSet resultSet = preparedStatement.getResultSet();
             System.out.println(" resultSet : " + ryt);
-            while (resultSet.next()) {
+            if (resultSet.next()) {
+                post = new Post();
                 int id1 = resultSet.getInt("id");
                 String name = resultSet.getString("name");
                 String text = resultSet.getString("text");
@@ -130,23 +145,22 @@ public class PsqlStore implements Store, AutoCloseable {
     }
 
     /**
-     * Метод проводит конвертацию даты из LocalDateTime(java) to TimeStame(sql-java)
+     * Метод проводит конвертацию даты из LocalDateTime(java) to TimeStamp(sql-java)
      *
      * @param post объект после парсинга топика сайта
      * @return конвертированное время
      */
     private Timestamp timeConvert(Post post) {
         var time = post.getCreated();
-        Timestamp timestamp = Timestamp.valueOf(time);
-        return timestamp;
+        return Timestamp.valueOf(time);
     }
 
     /**
      * Метод проводит обратныую конвертацию.
      * Полученный из БД TimeStamp in to LocalDateTime
      *
-     * @param timestamp
-     * @return LocalDateTime
+     * @param timestamp возвращается из БД
+     * @return LocalDateTime конвертируется для записи в сущность Post
      */
     private LocalDateTime timeConvertToLocal(Timestamp timestamp) {
         return timestamp.toLocalDateTime();
@@ -184,7 +198,7 @@ public class PsqlStore implements Store, AutoCloseable {
             e.printStackTrace();
         }
         PsqlStore psqlStore = new PsqlStore(props);
-        psqlStore.save(postN); //save object in DB
+        // psqlStore.save(postN); //save object in DB
         post1 = psqlStore.findById(1); //find object by index(id )
         System.out.println("to chto nashel FindById : " + post1.toString());
         List<Post> postList = psqlStore.getAll();
