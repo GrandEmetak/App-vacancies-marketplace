@@ -80,7 +80,7 @@ public class AlertRabbit {
             //JobDetail - используется для определения экземпляров Job s
             //Объект JobDetail создается клиентом Quartz во время добавления задания в планировщик.
             // По сути, это определение экземпляра задания
-            AlertRabbit alertRabbit = new AlertRabbit("./rabbit.properties");
+            AlertRabbit alertRabbit = new AlertRabbit("./appRab.properties");
            /* int i = alertRabbit.getInteger("rabbit.interval");
            это для варианта решения класса AlterRabbit что выше заккоментен*/
             String res = alertRabbit.properties.getProperty("rabbit.interval");

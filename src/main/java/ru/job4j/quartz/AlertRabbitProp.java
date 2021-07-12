@@ -21,7 +21,7 @@ import static org.quartz.SimpleScheduleBuilder.*;
  * В проекте агрегатор будет использоваться база данных. Открыть и закрывать соединение с базой накладно.
  * Чтобы этого избежать коннект к базе будет создаваться при старте. Объект коннект будет передаваться в Job.
  * Quartz создает объект Job, каждый раз при выполнении работы.
- * 1.Доработайте класс AlertRabbit. Добавьте в файл rabbit.properties настройки для базы данных.
+ * 1.Доработайте класс AlertRabbit. Добавьте в файл app.properties настройки для базы данных.
  * 2. Создайте sql schema с таблицей rabbit и полем created_date.
  * 3. При старте приложения создайте connect к базе и передайте его в Job.
  * 4. В Job сделайте запись в таблицу, когда выполнена Job.
@@ -47,7 +47,7 @@ public class AlertRabbitProp {
     }
 
     public static void main(String[] args) {
-        AlertRabbitProp alertRabbitProp = new AlertRabbitProp("./rabbit.properties");
+        AlertRabbitProp alertRabbitProp = new AlertRabbitProp("./appRab.properties");
         String str = alertRabbitProp.properties.getProperty("hibernate.connection.driver_class");
         try {
             Class.forName(str);
