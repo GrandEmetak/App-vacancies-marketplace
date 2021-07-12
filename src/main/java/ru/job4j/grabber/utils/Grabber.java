@@ -5,6 +5,9 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,12 +105,33 @@ public class Grabber implements Grab {
                 e.printStackTrace();
             }
             //PsqlStore psqlStore = store.
-
             //PsqlStore реализует Store и все его методы (save(Post post), List<Post> getAll(), Post findById(int id))
             //SqlRuParse методы интерфеса Parse(List<Post> list(String link), Post detail(String link))
             //Grabber implements Grab и все его методы (void init(Parse parse, Store store, Scheduler scheduler)))
             System.out.println("Закончили всек манипуляции");
         }
+    }
+
+    public void web(Store store) {
+        new Thread(() -> {
+            try (ServerSocket server = new ServerSocket(Integer.parseInt(cfg.getProperty("port")))) {
+                while (!server.isClosed()) {
+                    Socket socket = server.accept();
+                    try (OutputStream out = socket.getOutputStream()) {
+                        out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
+                        for (Post post : store.getAll()) {
+                            out.write
+                                    (post.toString().getBytes(Charset.forName("Windows-1251")));
+                            out.write(System.lineSeparator().getBytes());
+                        }
+                    } catch (IOException io) {
+                        io.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public static void main(String[] args) throws Exception {
@@ -118,5 +142,6 @@ public class Grabber implements Grab {
         Scheduler scheduler = grab.scheduler(); // запустили планировщик
         Store store = grab.store(); // подгрузили PsqlStore чтобы добраться до переопределенных методов интерфейса Store
         grab.init(new SqlRuParse(sqlDateTimeParser), store, scheduler);
+        grab.web(store);
     }
 }
