@@ -46,24 +46,78 @@ public class PsqlStore implements Store, AutoCloseable {
      */
     @Override
     public void save(Post post) {
-        try (PreparedStatement preparedStatement =
-                     cnn.prepareStatement("insert into post(name, text, link, created) values(?, ?, ?, ?)",
-                             Statement.RETURN_GENERATED_KEYS)) {
-            //preparedStatement.setInt(1, );
-            preparedStatement.setString(1, post.getTitle());
-            preparedStatement.setString(2, post.getDescription());
-            preparedStatement.setString(3, post.getLink());
-            //необходимо провести преобразование LocalDateTime в TimeStamp
-            preparedStatement.setTimestamp(4, timeConvert(post));
-            preparedStatement.execute();
-            try (ResultSet resultSetKey = preparedStatement.getGeneratedKeys()) {
-                if (resultSetKey.next()) {
-                    post.setId(resultSetKey.getInt(1));
+       // if (findByUniqueByLink(post.getLink()) == null) { //вариант 1
+        if (selectUniqueLinkByDb(post.getLink()) == null) { // вариант 2
+            try (PreparedStatement preparedStatement =
+                         cnn.prepareStatement("insert into post(name, text, link, created) values(?, ?, ?, ?)",
+                                 Statement.RETURN_GENERATED_KEYS)) {
+                //preparedStatement.setInt(1, );
+                preparedStatement.setString(1, post.getTitle());
+                preparedStatement.setString(2, post.getDescription());
+                preparedStatement.setString(3, post.getLink());
+                //необходимо провести преобразование LocalDateTime в TimeStamp
+                preparedStatement.setTimestamp(4, timeConvert(post));
+                preparedStatement.execute();
+                try (ResultSet resultSetKey = preparedStatement.getGeneratedKeys()) {
+                    if (resultSetKey.next()) {
+                        post.setId(resultSetKey.getInt(1));
+                    }
                 }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * метод проверяет на уникальность сущности Post по параметру link перед добавлением в БД
+     * варианат 1, подгружает весь List<Post> находящихся в БД для поиска и сравнения
+     * @param link уникальное поле в БД ( у сущности поле указывает на интеренет адрес расположения)
+     * @return null если сущности нет или сущностб Post
+     */
+    private Post findByUniqueByLink(String link) {
+        Post post = null;
+        var listDB = getAll();
+        if (listDB.size() > 0) {
+            for (Post post1 : listDB) {
+                if (post1.getLink().equals(link)) {
+                    post = post1;
+                    return post;
+                }
+            }
+        }
+        return post;
+    }
+
+    /**
+     * Метод вытягивает одну запись для сравнения из БД по link
+     * вариант 2
+     *
+     * @param string интернет адрес расположения страницы(link)
+     * @return Post объект в случае присутсявия в БД или null в случае отсутствия сущности в БД
+     */
+    private Post selectUniqueLinkByDb(String string) {
+        Post post1 = null;
+        try {
+            PreparedStatement preparedStatement =
+                    cnn.prepareStatement("select * from post where link = ?");
+            preparedStatement.setString(1, string);
+            preparedStatement.execute();
+            var resultSet = preparedStatement.getResultSet();
+            if (resultSet.next()) {
+                Post post  = new Post();
+                var rslSql = resultSet.getString("link");
+                post.setId(resultSet.getInt("id"));
+                post.setTitle(resultSet.getString("name"));
+                post.setLink(resultSet.getString("link"));
+                post.setDescription(resultSet.getString("text"));
+                post.setCreated(timeConvertToLocal(resultSet.getTimestamp("created")));
+                return post;
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        return post1;
     }
 
     /**
@@ -198,7 +252,7 @@ public class PsqlStore implements Store, AutoCloseable {
             e.printStackTrace();
         }
         PsqlStore psqlStore = new PsqlStore(props);
-        // psqlStore.save(postN); //save object in DB
+        psqlStore.save(postN); //save object in DB
         post1 = psqlStore.findById(1); //find object by index(id )
         System.out.println("to chto nashel FindById : " + post1.toString());
         List<Post> postList = psqlStore.getAll();
