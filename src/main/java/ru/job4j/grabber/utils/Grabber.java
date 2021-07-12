@@ -21,6 +21,8 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * 6. Grabber. [#289477]
  * Топик : 2.3.6. Проект. Агрегатор Java вакансий
  * Реализовать класс Grabber. Он должен выполнять все действия из технического задания.
+ *7. Web. [#289478] Топик : 2.3.6. Проект. Агрегатор Java вакансий
+ * Доработайте проект grabber.
  */
 public class Grabber implements Grab {
     private final Properties cfg = new Properties();
@@ -112,6 +114,8 @@ public class Grabber implements Grab {
         }
     }
 
+    //В разделе IO мы делали сервер EchoServer. В этом задании сделаем тоже самое
+    // только ответ от сервера будет в виде списка вакансий.
     public void web(Store store) {
         new Thread(() -> {
             try (ServerSocket server = new ServerSocket(Integer.parseInt(cfg.getProperty("port")))) {
@@ -121,7 +125,10 @@ public class Grabber implements Grab {
                         out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
                         for (Post post : store.getAll()) {
                             out.write
-                                    (post.toString().getBytes(Charset.forName("Windows-1251")));
+                                    //Примечание. При возникновении проблем с кодировкой на Windows,
+                                    // нужно указать кодировку при выводе Windows-1251
+                                    //post.toString().getBytes(Charset.forName("Windows-1251"))
+                                            (post.toString().getBytes(Charset.forName("Windows-1251")));
                             out.write(System.lineSeparator().getBytes());
                         }
                     } catch (IOException io) {
@@ -142,6 +149,7 @@ public class Grabber implements Grab {
         Scheduler scheduler = grab.scheduler(); // запустили планировщик
         Store store = grab.store(); // подгрузили PsqlStore чтобы добраться до переопределенных методов интерфейса Store
         grab.init(new SqlRuParse(sqlDateTimeParser), store, scheduler);
-        grab.web(store);
+        grab.web(store); //эхо сервер - вывод данных на страницу по URL http://localhost:9000
+        // должны увидеть строковое представление найденных вами вакансий на сранице
     }
 }
