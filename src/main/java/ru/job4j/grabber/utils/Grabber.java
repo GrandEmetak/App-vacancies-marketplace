@@ -78,7 +78,7 @@ public class Grabber implements Grab {
             Store store = (Store) map.get("store"); //метод save(Post) interface Store / -PsqlStore и его методы
             Parse parse = (Parse) map.get("parse"); // SqlRuParse and this methods
             String stringToParse = map.getString("hibernate.connection.link");
-            List<Post> postArrayList = new ArrayList<>();//для ссыллок последующих включая титульную
+            List<Post> postArrayList = new ArrayList<>(); //для ссыллок последующих включая титульную
             List<String> stringList = new ArrayList<>();
             Post post = new Post();
             List<Post> listAfterBD = new ArrayList<>();
