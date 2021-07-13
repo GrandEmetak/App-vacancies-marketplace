@@ -1,5 +1,9 @@
 package ru.job4j.grabber.utils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.quartz.*;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
@@ -21,7 +25,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * 6. Grabber. [#289477]
  * Топик : 2.3.6. Проект. Агрегатор Java вакансий
  * Реализовать класс Grabber. Он должен выполнять все действия из технического задания.
- *7. Web. [#289478] Топик : 2.3.6. Проект. Агрегатор Java вакансий
+ * 7. Web. [#289478] Топик : 2.3.6. Проект. Агрегатор Java вакансий
  * Доработайте проект grabber.
  */
 public class Grabber implements Grab {
@@ -74,21 +78,32 @@ public class Grabber implements Grab {
             Store store = (Store) map.get("store"); //метод save(Post) interface Store / -PsqlStore и его методы
             Parse parse = (Parse) map.get("parse"); // SqlRuParse and this methods
             String stringToParse = map.getString("hibernate.connection.link");
-            List<Post> postArrayList = new ArrayList<>();
+            List<Post> postArrayList = new ArrayList<>();//для ссыллок последующих включая титульную
+            List<String> stringList = new ArrayList<>();
             Post post = new Post();
             List<Post> listAfterBD = new ArrayList<>();
             // post = parse.list(stringToParse); // записали в Лист все топики в сущностти Post(53 шт)
             try {
-                postArrayList = parse.list(stringToParse); // записали в Лист все топики в сущностти Post(53 шт)
-                System.out.println("размер листа после парсинга страницы : " + postArrayList.size());
-                System.out.println("выборочно сущность из этого списака : индекс 3 - " + postArrayList.get(3));
-                //saving in database
-                for (Post post1 : postArrayList) {
-                    try {
-                        store.save(post1);
-                        System.out.println("Everything is ok");
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                stringList.add(stringToParse);
+                Document document = Jsoup.connect(stringToParse).get();
+                Elements elements = document.select(".sort_options");
+                Elements link = elements.select("a[href]");
+                for (Element element : link) {
+                    stringList.add(element.attr("href")); // добавили все ссылки на след старницы
+                }
+                for (int i = 0; i < 5; i++) {
+                    postArrayList = parse.list(stringList.get(i)); // топики с текущей стриницы/ссылки в лист
+                    // postArrayList = parse.list(stringToParse); // записали в Лист все топики в сущностти Post(53 шт)
+                    System.out.println("размер листа после парсинга страницы : " + postArrayList.size());
+                    System.out.println("выборочно сущность из этого списака : индекс 3 - " + postArrayList.get(3));
+                    //saving in database
+                    for (Post post1 : postArrayList) {
+                        try {
+                            store.save(post1);
+                            System.out.println("Everything is ok");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 try {
@@ -128,7 +143,7 @@ public class Grabber implements Grab {
                                     //Примечание. При возникновении проблем с кодировкой на Windows,
                                     // нужно указать кодировку при выводе Windows-1251
                                     //post.toString().getBytes(Charset.forName("Windows-1251"))
-                                            post.toString().getBytes(Charset.forName("Windows-1251")));
+                                    post.toString().getBytes(Charset.forName("Windows-1251")));
                             out.write(System.lineSeparator().getBytes());
                         }
                     } catch (IOException io) {
