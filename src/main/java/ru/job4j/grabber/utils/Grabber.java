@@ -71,7 +71,54 @@ public class Grabber implements Grab {
     }
 
     public static class GrabJob implements Job {
+// вариант №1
+//PsqlStore реализует Store и все его методы (save(Post post), List<Post> getAll(), Post findById(int id))
+//SqlRuParse методы интерфеса Parse(List<Post> list(String link), Post detail(String link))
+//Grabber implements Grab и все его методы (void init(Parse parse, Store store, Scheduler scheduler)))
+        @Override
+        public void execute(JobExecutionContext context) throws JobExecutionException {
+            JobDataMap map = context.getJobDetail().getJobDataMap();
+            Store store = (Store) map.get("store"); //метод save(Post) interface Store / -PsqlStore и его методы
+            Parse parse = (Parse) map.get("parse"); // SqlRuParse and this methods
+            String stringToParse = map.getString("hibernate.connection.link");
+            List<Post> postArrayList = new ArrayList<>(); //для ссыллок последующих включая титульную
+            List<String> stringList = new ArrayList<>();
+            Post post = new Post();
+            List<Post> listAfterBD = new ArrayList<>();
+            // post = parse.list(stringToParse); // записали в Лист все топики в сущностти Post(53 шт)
+            try {
+                postArrayList = parse.list(stringToParse);
+                for (int i = 2; i < 6; i++) {
+                    //записали в Лист все топики в сущностти Post(53 шт)
+                    postArrayList = parse.list(stringToParse + "/" + i);
+                    //saving in database
+                    for (Post post1 : postArrayList) {
+                        try {
+                            store.save(post1);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                try {
+                    var listAfterDB = store.getAll();
+                    System.out.println("listAfterDB size :" + listAfterDB.size());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                post = store.findById(3);
+                System.out.println("what find by index : " + post.toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
+/*   //вариант №2 с вычислением все ссылок на последующие старницы
+        //начиная с титольной(входящей) и последующих 4 страницы
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
             JobDataMap map = context.getJobDetail().getJobDataMap();
@@ -126,7 +173,7 @@ public class Grabber implements Grab {
             //SqlRuParse методы интерфеса Parse(List<Post> list(String link), Post detail(String link))
             //Grabber implements Grab и все его методы (void init(Parse parse, Store store, Scheduler scheduler)))
             System.out.println("Закончили всек манипуляции");
-        }
+        }*/
     }
 
     //В разделе IO мы делали сервер EchoServer. В этом задании сделаем тоже самое
