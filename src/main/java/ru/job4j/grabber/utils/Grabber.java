@@ -85,7 +85,7 @@ public class Grabber implements Grab {
             List<String> stringList = new ArrayList<>();
             Post post = new Post();
             List<Post> listAfterBD = new ArrayList<>();
-            // post = parse.list(stringToParse); // записали в Лист все топики в сущностти Post(53 шт)
+
             try {
                 postArrayList = parse.list(stringToParse);
                 for (int i = 2; i < 6; i++) {
