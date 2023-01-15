@@ -1,17 +1,21 @@
-# job4j_grabber
+# App Vacancies Marketplace
 
-[![Build Status](https://travis-ci.com/SlartiBartFast-art/job4j_grabber.svg?branch=main)](https://travis-ci.com/SlartiBartFast-art/job4j_grabber)
-[![codecov](https://codecov.io/gh/SlartiBartFast-art/job4j_grabber/branch/main/graph/badge.svg?token=55F8GZ1R8S)](https://codecov.io/gh/SlartiBartFast-art/job4j_grabber)
-![GitHub top language](https://img.shields.io/github/languages/top/SlartiBartFast-art/job4j_grabber?logo=java&logoColor=red)
-![GitHub last commit](https://img.shields.io/github/last-commit/SlartiBartFast-art/job4j_grabber?logo=github)
+[![Build Status](https://travis-ci.com/GrandEmetak/App-vacancies-marketplace.svg?branch=main)](https://travis-ci.com/GrandEmetak/App-vacancies-marketplace)
+[![codecov](https://codecov.io/gh/GrandEmetak/App-vacancies-marketplace/branch/main/graph/badge.svg?token=55F8GZ1R8S)](https://codecov.io/gh/GrandEmetak/App-vacancies-marketplace)
+![GitHub top language](https://img.shields.io/github/languages/top/GrandEmetak/App-vacancies-marketplace?logo=java&logoColor=red)
+![GitHub last commit](https://img.shields.io/github/last-commit/GrandEmetak/App-vacancies-marketplace?logo=github)
 
-Проект - Агрегатор вакансий.
+Приложение — Маркетплейс вакансий.
 
 Описание.
 
-Система запускается по расписанию. Период запуска указывается в настройках - app.properties.
+Система запускается по расписанию. 
 
-Первый сайт будет sql.ru. В нем есть раздел job. Программа должна считывать все вакансии относящиеся к Java и записывать их в базу.
+Период запуска указывается в настройках - app.properties.
+
+Первый сайт будет sql.ru. В нем есть раздел job. 
+
+Программа должна считывать все вакансии относящиеся к Java и записывать их в базу.
 
 Доступ к интерфейсу будет через REST API.
 
