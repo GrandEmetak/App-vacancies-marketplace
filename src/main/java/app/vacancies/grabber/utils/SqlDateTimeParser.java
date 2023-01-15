@@ -12,8 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 2.1. Преобразование даты [# 289476]
- * Топик: 2.3.5. Проект. Агрегатор Java вакансий
+
  * Сайт sql.ru отображает дату в формате удобном для человека.
  * Такой формат Java не может преобразовать.
  * Вам нужно через методы String преобразовать строку в дату.
@@ -21,8 +20,7 @@ import java.util.Map;
  * и реализуем его конкретно по сайту sql.ru
  * +
  * 2.1.1. Парсинг https://www.sql.ru/forum/job-offers/3 [#285210]
- * Топик : 2.3.5. Проект.
- * 1. Доработайте метод main из предыдущего задания. Парсить нужно первые 5 страниц.
+ Парсить - первые 5 страниц.
  */
 public class SqlDateTimeParser implements DateTimeParser {
     private static final Map<String, String> MONTHS = Map.ofEntries(

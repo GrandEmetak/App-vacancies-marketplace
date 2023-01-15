@@ -4,12 +4,11 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * 2.3. Загрузка деталей поста. [#285212]
- * Топик : 2.3.5. Проект. Агрегатор Java вакансий
  * Создайте метод для загрузки деталей объявления.
  * Заполнить поля объекта Post по ссылке на страницу вакансии
  */
 public class Post {
+
     private int id;
     private String title;
     private String link;

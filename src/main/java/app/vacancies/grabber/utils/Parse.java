@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * 3. Архитектура проекта - Аргегатор Java Вакансий [#260359]
  * Извлечение данных с сайта.
  * Операция извлечения данных с  сайта описывается отдельным интерфейсом.
- * ru.job4j.grabber.Parse
+Parse
  */
 public interface Parse {
     /**

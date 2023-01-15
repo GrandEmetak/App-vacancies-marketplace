@@ -11,18 +11,12 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * 5. PsqlStore [#285209]
- * Топик : 2.3.6. Проект. Агрегатор Java
- * Реализуйте класс PsqlStore на основании интерфейса Store.
- * Реализуйте класс PsqlStore.
- * Напишите метод main для демонстрации работы класса PsqlStore.
- * Реализует интерфейс AutoCloseable
  */
 public class PsqlStore implements Store, AutoCloseable {
     private Connection cnn;
 
     /**
-     * Метод привязывыет драйев, открывает создает объект для соединение
+     * Метод привязывает драйев, открывает создает объект для соединение
      *
      * @param cfg файл конфигурации(ключ/драйвер) для установки соединения
      */

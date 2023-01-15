@@ -3,12 +3,13 @@ package app.vacancies.grabber.utils;
 import java.util.List;
 
 /**
- * 3. Архитектура проекта - Аргегатор Java Вакансий [#260359]
+
  * Хранилище.
- * Наш проект будет хранить данные в базе Postgresql.
- * Связь с базой будет осуществляться через интерфейс. ru.job4j.grabber.Store.
+ * Проект будет хранить данные в базе Postgresql.
+ * Связь с базой будет осуществляться через интерфейс. -.Store.
  */
 public interface Store {
+
     /**
      * Метод save() - сохраняет объявление в базе.
      * @param post

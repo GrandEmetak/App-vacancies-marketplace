@@ -18,13 +18,9 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
- * 6. Grabber. [#289477]
- * Топик : 2.3.6. Проект. Агрегатор Java вакансий
- * Реализовать класс Grabber. Он должен выполнять все действия из технического задания.
- * 7. Web. [#289478] Топик : 2.3.6. Проект. Агрегатор Java вакансий
- * Доработайте проект grabber.
  */
 public class Grabber implements Grab {
+
     private final Properties cfg = new Properties();
 
     public Store store() throws SQLException {

@@ -1,5 +1,6 @@
-package app.vacancies.grabber.utils;
+package app.vacancies.draft;
 
+import app.vacancies.grabber.utils.SqlDateTimeParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

@@ -11,8 +11,7 @@ import static org.quartz.TriggerBuilder.*;
 import static org.quartz.SimpleScheduleBuilder.*;
 
 /**
- * 1. Quartz [#175122]
- * Топик : 2.3.5. Проект. Агрегатор Java
+ * Quartz
  */
 public class AlertRabbit {
     private Properties properties = new Properties();

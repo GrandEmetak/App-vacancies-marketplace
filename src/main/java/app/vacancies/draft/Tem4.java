@@ -1,4 +1,4 @@
-package app.vacancies.grabber.utils;
+package app.vacancies.draft;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
