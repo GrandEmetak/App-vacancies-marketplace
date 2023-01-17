@@ -1,9 +1,9 @@
 # App Vacancies Marketplace
 
-[![Build Status](https://travis-ci.com/GrandEmetak/App-vacancies-marketplace.svg?branch=main)](https://travis-ci.com/GrandEmetak/App-vacancies-marketplace)
-[![codecov](https://codecov.io/gh/GrandEmetak/App-vacancies-marketplace/branch/main/graph/badge.svg?token=55F8GZ1R8S)](https://codecov.io/gh/GrandEmetak/App-vacancies-marketplace)
-![GitHub top language](https://img.shields.io/github/languages/top/GrandEmetak/App-vacancies-marketplace?logo=java&logoColor=red)
-![GitHub last commit](https://img.shields.io/github/last-commit/GrandEmetak/App-vacancies-marketplace?logo=github)
+[![Build Status](https://travis-ci.com/Halsyon/App-vacancies-marketplace.svg?branch=main)](https://travis-ci.com/Halsyon/App-vacancies-marketplace)
+[![codecov](https://codecov.io/gh/Halsyon/App-vacancies-marketplace/branch/main/graph/badge.svg?token=55F8GZ1R8S)](https://codecov.io/gh/Halsyon/App-vacancies-marketplace)
+![GitHub top language](https://img.shields.io/github/languages/top/Halsyon/App-vacancies-marketplace?logo=java&logoColor=red)
+![GitHub last commit](https://img.shields.io/github/last-commit/Halsyon/App-vacancies-marketplace?logo=github)
 
 Приложение — Маркетплейс вакансий.
 
